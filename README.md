@@ -1,6 +1,7 @@
 # 🌍 Web3 Union - The Future of Money Transfers
 
 This project is a way to transfer USDC between blockchains 🌐💸 Instead of relying on traditional banking, we use **Circle's Cross-Chain Transfer Protocol (CCTP)** to move **USDC across different blockchains** instantly and securely.
+<img width="1040" alt="web3union" src="https://github.com/user-attachments/assets/0f762286-4423-4778-a9fd-4d3a97356fc4" />
 
 ---
 
