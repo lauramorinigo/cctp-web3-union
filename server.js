@@ -31,6 +31,25 @@ const sourceChain = "avalanche-fuji"; // Change to the desired source chain
 const destinationChain = "sepolia"; // Change to the desired destination chain
 */
 
+let clients = [];
+
+// SSE endpoint for real-time updates
+app.get("/events", (req, res) => {
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+
+    clients.push(res);
+
+    req.on("close", () => {
+        clients = clients.filter(client => client !== res);
+    });
+});
+
+function sendUpdate(message) {
+    clients.forEach(client => client.write(`data: ${message}\n\n`));
+}
+
 app.get("/", (req, res) => {
     res.sendFile(__dirname + "/public/index.html");
 });
@@ -55,10 +74,10 @@ app.post('/transfer', async (req, res) => {
 
     const destinationAddress = await destinationChainSDK.wallet.getAddress();
 
-    console.log(
+    sendUpdate(
         `Transferring ${amount} USDC from ${sourceChainObject.name} to ${destinationChainObject.name}`
     );
-    console.log("Wallet Address:", destinationAddress);
+    sendUpdate(`Wallet Address: ${destinationAddress}`);
 
     const TOKEN_MESSENGER_CONTRACT_ADDRESS = sourceChainObject.tokenMessengerContract;
     const USDC_CONTRACT_ADDRESS = sourceChainObject.usdcContract;
@@ -78,22 +97,23 @@ app.post('/transfer', async (req, res) => {
    
 
     // STEP 1: Approve messenger contract to withdraw from active wallet address
-    console.log(`Approving USDC transfer on ${sourceChainObject.name}...`);
+    sendUpdate(`Approving USDC transfer on ${sourceChainObject.name}...`);
     const approveMessengerWithdraw = await usdcEthContract.call("approve", [
         TOKEN_MESSENGER_CONTRACT_ADDRESS,
         amountInUSDC,
     ]);
-    console.log("Approved - txHash:", approveMessengerWithdraw.receipt.transactionHash);
+    sendUpdate(`Approved - txHash: ${approveMessengerWithdraw.receipt.transactionHash}`);
 
     // STEP 2: Burn USDC
-    console.log(`Depositing USDC to Token Messenger contract on ${sourceChainObject.name}...`);
+    sendUpdate(`Depositing USDC to Token Messenger contract on ${sourceChainObject.name}...`);
     const burnUSDC = await ethTokenMessengerContract.call("depositForBurn", [
         amountInUSDC,
         DESTINATION_DOMAIN,
         destinationAddressInBytes32,
         USDC_CONTRACT_ADDRESS,
     ]);
-    console.log("Deposited - txHash:", burnUSDC.receipt.transactionHash);
+    sendUpdate(`Deposited - txHash: ${burnUSDC.receipt.transactionHash}`);
+
 
     // STEP 3: Retrieve message bytes from logs
     const transactionReceipt = burnUSDC.receipt;
@@ -109,7 +129,7 @@ app.post('/transfer', async (req, res) => {
             `https://iris-api-sandbox.circle.com/attestations/${messageHash}`
         );
         attestationResponse = await response.json();
-        console.log("Attestation Status:", attestationResponse.status || "sent");
+        sendUpdate(`Attestation Status: ${attestationResponse.status || "sent"}`);
         await new Promise((r) => setTimeout(r, 2000));
     }
 
@@ -120,7 +140,7 @@ app.post('/transfer', async (req, res) => {
         "receiveMessage",
         [messageBytes, attestationSignature]
     );
-    console.log("Received funds successfully - txHash:", receiveTx.receipt.transactionHash);
+    sendUpdate(`Transaction complete - txHash: ${receiveTx.receipt.transactionHash}`);
 
     res.status(200).json({
         message: "Transfer complete",

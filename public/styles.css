@@ -87,6 +87,20 @@ button:hover {
     font-weight: bold;
 }
 
+#status-updates {
+    list-style-type: none;
+    padding: 0;
+    margin-top: 20px;
+    font-size: 14px;
+    color: #555;
+}
+
+#status-updates li {
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+}
+
+
 .success {
     color: #2a9d8f;
 }
