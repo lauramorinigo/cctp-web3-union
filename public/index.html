@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Circle Fintech Transfer Demo</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">Circle Fintech Demo</div>
+        </header>
+        <main>
+            <h1>Transfer USDC Across Chains</h1>
+            <form id="transferForm">
+                <div class="form-group">
+                    <label for="amount">Amount (USDC)</label>
+                    <input type="number" id="amount" name="amount" required min="0.01" step="0.01">
+                </div>
+
+                <div class="form-group">
+                    <label for="source-chain">Source Chain</label>
+                    <select id="source-chain" name="source-chain" required>
+                        <option value="avalanche-fuji" selected>Avalanche Fuji</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="destination-chain">Destination Chain</label>
+                    <select id="destination-chain" name="destination-chain" required>
+                        <option value="sepolia" selected>Sepolia</option>
+                    </select>
+                </div>
+
+                <button type="submit">Transfer</button>
+            </form>
+
+            <div id="transaction-status" class="status">Awaiting transaction...</div>
+        </main>
+        <footer>
+            <p>&copy; 2025 Circle Fintech Demo</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
