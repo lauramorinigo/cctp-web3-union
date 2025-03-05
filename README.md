@@ -9,9 +9,13 @@ This project is a way to transfer USDC between blockchains 🌐💸 Instead of r
 
 ### 🛠️ How It Works
 1️⃣ **User initiates a transfer** 📝
+
 2️⃣ **Smart contract burns USDC** on **Avalanche Fuji** 🔥
+
 3️⃣ **Circle provides an attestation** (proof of burn) ✅
+
 4️⃣ **New USDC is minted** on **Ethereum Sepolia** ✨
+
 5️⃣ **Funds arrive at the destination wallet** 🎉
 
 ---
